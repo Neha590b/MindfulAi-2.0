@@ -124,7 +124,7 @@ Click the microphone widget above the chat box to speak instead of typing.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Atul-SyntexError/MindfulAi-2.0.git
+git clone https://github.com/Neha590b/MindfulAi-2.0.git
 cd MindfulAi-2.0
 ```
 
@@ -323,16 +323,3 @@ LOG_LEVEL=DEBUG streamlit run app.py
 > or a crisis hotline immediately.
 
 ---
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-<div align="center">
-  <sub>Built with 💜 using Streamlit + Groq</sub>
-</div>
-<div align="center">
-  <sub>Copyright (c) Prince Atul</sub>
-</div>
