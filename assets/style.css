@@ -1,0 +1,355 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   MindfulAI 2.0 — mood-aware theme
+   Every colour below comes from a CSS variable. components/theme.py
+   overrides these variables on :root whenever the mood dropdown changes,
+   so the whole page re-colours itself.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* defaults = neutral teal (no mood selected) */
+    --accent:        #0D9488;
+    --on-accent:     #FFFFFF;
+    --accent-deep:   #0F766E;
+    --accent-soft:   rgba(13, 148, 136, 0.12);
+    --accent-border: rgba(13, 148, 136, 0.45);
+    --accent-glow:   rgba(13, 148, 136, 0.28);
+    --ink:           #111827;
+    --ink-soft:      #5B6B73;
+    --line:          #D8E3E0;
+    --bg-1: #F8FAFC;
+    --bg-2: #F1F7F6;
+    --bg-3: #EAF4F2;
+    --surface:       rgba(255, 255, 255, 0.88);
+    --surface-solid: #FFFFFF;
+    --sidebar-bg:    rgba(255, 255, 255, 0.62);
+    --radius:        12px;
+    --shadow:        0 10px 30px rgba(15, 23, 42, 0.06);
+    --shadow-small:  0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+/* ── Page canvas ────────────────────────────────────────────────────────── */
+html, body, .stApp {
+    font-family: 'DM Sans', system-ui, sans-serif !important;
+    color: var(--ink) !important;
+}
+.stApp {
+    background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%) fixed !important;
+}
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stBottom"],
+[data-testid="stBottom"] > div,
+[data-testid="stHeader"] {
+    background: transparent !important;
+}
+#MainMenu, footer { visibility: hidden !important; }
+[data-testid="stHeader"] { height: 0 !important; }
+
+.block-container,
+[data-testid="stMainBlockContainer"] {
+    max-width: 780px;
+    padding: 2.2rem 2rem 1.5rem !important;
+    position: relative;
+    z-index: 1;                      /* keep content above the emoji layer */
+}
+
+/* ── Floating mood emojis ───────────────────────────────────────────────── */
+.mood-bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+.mood-bg-layer span {
+    position: absolute;
+    line-height: 1;
+    user-select: none;
+    opacity: var(--o, 0.2);
+    animation:
+        moodFloat var(--d, 12s) ease-in-out infinite,
+        moodFadeIn 1.4s ease both;
+}
+@keyframes moodFloat {
+    0%, 100% { transform: translateY(0)     rotate(var(--r, 0deg)); }
+    50%      { transform: translateY(-22px) rotate(calc(var(--r, 0deg) + 7deg)); }
+}
+@keyframes moodFadeIn { from { opacity: 0; } to { opacity: var(--o, 0.2); } }
+
+/* the <style> / emoji-layer markdown blocks must not take up layout space */
+.element-container:has(.mood-bg-layer), .element-container:has(.mood-css),
+[data-testid="stElementContainer"]:has(.mood-bg-layer),
+[data-testid="stElementContainer"]:has(.mood-css) {
+    position: absolute !important;
+    width: 0; height: 0; margin: 0; padding: 0;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.app-header { padding: 0.2rem 0 1.1rem; text-align: center; }
+.app-header-topline {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.6rem; margin-bottom: 0.9rem;
+}
+.app-header-mark, .sidebar-brand-mark {
+    display: inline-grid; place-items: center;
+    width: 2.1rem; height: 2.1rem; border-radius: 50%;
+    background: var(--accent); color: var(--on-accent);
+    font-size: 1.1rem; line-height: 1;
+    box-shadow: 0 4px 14px var(--accent-glow);
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.app-header-kicker {
+    color: var(--accent-deep); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+}
+.stApp .app-header-title {
+    margin: 0; padding: 0;
+    color: var(--ink);
+    font-family: 'DM Sans', system-ui, sans-serif !important;
+    font-size: clamp(2.4rem, 7vw, 3.6rem) !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+}
+.app-header-subtitle { margin: 0.55rem 0 0; color: var(--ink-soft); font-size: 1rem; }
+.app-header-rule {
+    width: 4.5rem; height: 4px; margin: 1.2rem auto 0; border-radius: 4px;
+    background: var(--accent);
+    transition: background 0.4s ease;
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background: var(--sidebar-bg) !important;
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border-right: 1px solid var(--line) !important;
+}
+[data-testid="stSidebar"] > div:first-child { background: transparent !important; }
+[data-testid="stSidebarContent"] { background: transparent !important; }
+
+.sidebar-brand { display: flex; align-items: center; gap: 0.7rem; padding: 0.25rem 0 0.6rem; }
+.sidebar-brand-mark { flex: 0 0 auto; width: 2.3rem; height: 2.3rem; }
+.sidebar-brand h2 {
+    margin: 0; padding: 0; color: var(--ink);
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em;
+}
+.sidebar-brand span { color: var(--ink-soft); font-size: 0.7rem; }
+
+[data-testid="stSidebar"] [data-testid="stMarkdown"] h4 {
+    margin: 1.1rem 0 0.45rem !important; padding: 0 !important;
+    color: var(--accent-deep) !important;
+    font-size: 0.7rem !important; font-weight: 700 !important;
+    letter-spacing: 0.12em !important; text-transform: uppercase !important;
+}
+[data-testid="stSidebar"] label, [data-testid="stSidebar"] p { color: var(--ink); }
+
+/* current-mood chip under the dropdown */
+.mood-chip {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-top: 0.15rem; padding: 0.35rem 0.85rem;
+    border: 1px solid var(--accent-border); border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent-deep); font-size: 0.85rem;
+}
+.mood-chip-dot {
+    width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--accent);
+    animation: moodPulse 2.2s ease-in-out infinite;
+}
+@keyframes moodPulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+    50%      { box-shadow: 0 0 0 6px transparent; }
+}
+.mood-note { margin: 0.5rem 0 0; color: var(--ink-soft) !important; font-size: 0.78rem; font-style: italic; }
+
+/* ── Welcome card ───────────────────────────────────────────────────────── */
+.welcome-card {
+    margin: 1rem 0 1.4rem; padding: 1.8rem;
+    border: 1px solid var(--line); border-radius: 16px;
+    background: var(--surface); box-shadow: var(--shadow);
+}
+.welcome-eyebrow {
+    margin: 0 0 0.55rem; color: var(--accent-deep);
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.stApp .welcome-title {
+    margin: 0 0 0.65rem; padding: 0; color: var(--ink);
+    font-size: 1.7rem !important; font-weight: 800 !important; letter-spacing: -0.02em;
+}
+.welcome-text { max-width: 36rem; margin: 0 0 1.25rem; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.65; }
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.feature-chip {
+    padding: 0.65rem 0.8rem; border: 1px solid var(--accent-border); border-radius: 9px;
+    background: var(--accent-soft); color: var(--ink); font-size: 0.82rem; font-weight: 600;
+}
+.feature-chip span { display: inline-block; width: 1.4rem; color: var(--accent-deep); font-size: 0.7rem; }
+.welcome-hint { margin: 1.2rem 0 0; color: var(--ink-soft); font-size: 0.8rem; }
+
+/* ── Conversation ───────────────────────────────────────────────────────── */
+[data-testid="stChatMessage"] {
+    margin-bottom: 0.7rem !important; padding: 1rem 1.15rem !important;
+    border: 1px solid var(--line) !important; border-radius: var(--radius) !important;
+    background: var(--surface) !important; box-shadow: var(--shadow-small) !important;
+    color: var(--ink) !important;
+}
+[data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p { line-height: 1.65; }
+[data-testid="stChatMessage"] [data-testid="stCaption"],
+[data-testid="stChatMessage"] [data-testid="stCaptionContainer"] {
+    margin-top: 0.3rem; color: var(--ink-soft) !important; font-size: 0.72rem !important;
+}
+/* the little avatar tile */
+[data-testid="stChatMessageAvatarUser"], [data-testid="stChatMessageAvatarAssistant"] {
+    background: var(--accent-soft) !important; border: 1px solid var(--accent-border);
+}
+
+/* chat input */
+[data-testid="stChatInput"] { padding-bottom: 0.3rem; background: transparent !important; }
+[data-testid="stChatInput"] > div {
+    border: 1.5px solid var(--accent-border) !important;
+    border-radius: 12px !important;
+    background: var(--surface-solid) !important;
+    box-shadow: 0 0 0 3px transparent;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+[data-testid="stChatInput"] > div:focus-within {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow) !important;
+}
+[data-testid="stChatInput"] textarea {
+    color: var(--ink) !important; font-family: 'DM Sans', sans-serif !important;
+    background: transparent !important; caret-color: var(--accent);
+}
+[data-testid="stChatInputSubmitButton"] { color: var(--accent) !important; }
+[data-testid="stChatInputSubmitButton"]:hover { background: var(--accent-soft) !important; }
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.stButton > button {
+    min-height: 2.6rem; border-radius: 9px !important; font-weight: 600 !important;
+    box-shadow: none !important;
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease !important;
+}
+.stButton > button:hover { transform: translateY(-1px) !important; }
+.stButton > button[kind="primary"], .stButton [data-testid="stBaseButton-primary"] {
+    border: 1px solid var(--accent) !important;
+    background: var(--accent) !important;
+    color: var(--on-accent) !important;
+}
+.stButton > button[kind="primary"] p, .stButton [data-testid="stBaseButton-primary"] p { color: var(--on-accent) !important; }
+.stButton > button[kind="primary"]:hover, .stButton [data-testid="stBaseButton-primary"]:hover {
+    filter: brightness(0.92);
+    box-shadow: 0 6px 16px var(--accent-glow) !important;
+}
+.stButton > button[kind="secondary"], .stButton [data-testid="stBaseButton-secondary"] {
+    border: 1px solid var(--accent-border) !important;
+    background: var(--surface-solid) !important;
+    color: var(--ink) !important;
+}
+.stButton > button[kind="secondary"]:hover, .stButton [data-testid="stBaseButton-secondary"]:hover {
+    background: var(--accent-soft) !important;
+    border-color: var(--accent) !important;
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────────────── */
+/* selectbox: new (React Aria) markup first, BaseWeb fallback second */
+[data-testid="stSelectbox"] [role="group"],
+[data-testid="stSelectbox"] [data-baseweb="select"] > div,
+[data-testid="stTextArea"] textarea,
+[data-testid="stTextInput"] input {
+    border: 1px solid var(--accent-border) !important;
+    border-radius: 9px !important;
+    background: var(--surface-solid) !important;
+    color: var(--ink) !important;
+}
+[data-testid="stSelectbox"] [role="group"][data-focus-within="true"],
+[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within,
+[data-testid="stTextArea"] textarea:focus,
+[data-testid="stTextInput"] input:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow) !important;
+}
+[data-testid="stSelectbox"] input { color: var(--ink) !important; }
+[data-testid="stTextArea"] > div, [data-testid="stTextArea"] [data-baseweb="textarea"] {
+    background: transparent !important; border: none !important;
+}
+[data-testid="stAudioInput"] > div {
+    border: 1px solid var(--accent-border) !important;
+    border-radius: 10px !important;
+    background: var(--surface-solid) !important;
+}
+
+/* dropdown menu (rendered in a portal, outside the sidebar) */
+[data-testid="stSelectboxVirtualDropdown"], [data-baseweb="popover"] ul[role="listbox"] {
+    background: var(--surface-solid) !important;
+    border: 1px solid var(--accent-border) !important;
+    border-radius: 10px !important;
+}
+[data-testid="stSelectboxVirtualDropdown"] [role="option"][data-hovered="true"],
+[data-testid="stSelectboxVirtualDropdown"] [role="option"][data-focused="true"],
+[data-testid="stSelectboxVirtualDropdown"] [role="option"][aria-selected="true"],
+[data-baseweb="popover"] li[role="option"]:hover,
+[data-baseweb="popover"] li[role="option"][aria-selected="true"] {
+    background: var(--accent-soft) !important;
+    color: var(--accent-deep) !important;
+}
+
+/* slider — works with both the new (React Aria) and older (BaseWeb) Streamlit markup */
+[data-testid="stSlider"] div[data-orientation][style*="position: relative"] > div:first-child {
+    background-image: none !important;
+    background-color: var(--accent-glow) !important;
+    border-radius: 4px;
+}
+[data-testid="stSlider"] div[data-orientation][style*="position: relative"] > div[style*="position: absolute"] {
+    background-color: var(--accent) !important;
+    box-shadow: 0 0 0 4px var(--accent-glow) !important;
+}
+[data-testid="stSlider"] [role="slider"] {
+    background-color: var(--accent) !important;
+    box-shadow: 0 0 0 4px var(--accent-glow) !important;
+}
+[data-testid="stSliderThumbValue"], [data-testid="stSliderThumbValue"] p,
+[data-testid="stSliderTickBar"] p { color: var(--accent-deep) !important; font-weight: 600; }
+[data-testid="stSliderTickBar"] p { font-weight: 500; opacity: 0.8; }
+
+/* radio */
+[data-testid="stRadioOption"] > div > div:first-child { border-color: var(--accent-border) !important; }
+[data-testid="stRadioOption"][data-selected="true"] > div > div:first-child {
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}
+[data-testid="stRadioOption"][data-selected="true"] > div > div:first-child > div { background-color: var(--on-accent) !important; }
+
+/* alerts (info / success / warning / API-key notice) share the mood tint */
+[data-testid="stAlert"] {
+    border: 1px solid var(--accent-border) !important;
+    border-radius: 10px !important;
+    background: var(--accent-soft) !important;
+    color: var(--ink) !important; font-size: 0.86rem !important;
+}
+[data-testid="stAlert"] p, [data-testid="stAlert"] a { color: var(--ink) !important; }
+
+hr { border-color: var(--line) !important; opacity: 1 !important; }
+[data-testid="stToast"] { border-radius: 10px !important; }
+[data-testid="stPlotlyChart"] { border-radius: 10px; overflow: hidden; }
+a { color: var(--accent-deep) !important; }
+
+.disclaimer-bar {
+    margin-top: 1.2rem; padding: 0.8rem 0; border-top: 1px solid var(--line);
+    color: var(--ink-soft); font-size: 0.72rem; line-height: 1.5; text-align: center;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { border-radius: 3px; background: var(--accent-border); }
+
+/* ── Responsive / accessibility ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .block-container, [data-testid="stMainBlockContainer"] { padding: 1.2rem 1rem 1rem !important; }
+    .welcome-card { padding: 1.3rem; }
+    .mood-bg-layer span { font-size: 2rem !important; }
+}
+@media (max-width: 420px) { .feature-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+    .mood-bg-layer span, .mood-chip-dot { animation: none !important; }
+    .mood-bg-layer span { opacity: var(--o, 0.2); }
+}
